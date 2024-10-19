@@ -1,0 +1,9 @@
+(executable
+ (public_name 2015)
+ (name Main)
+ (libraries Base))
+
+(test
+ (name Day01_test)
+ (modules Day01_test Day01)
+ (libraries alcotest))
