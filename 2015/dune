@@ -5,5 +5,10 @@
 
 (test
  (name Day01_test)
- (modules Day01_test Day01)
+ (modules Day01 Day01_test)
+ (libraries alcotest))
+
+(test
+ (name Day02_test)
+ (modules Day02 Day02_test)
  (libraries alcotest))
