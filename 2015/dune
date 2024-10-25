@@ -17,3 +17,8 @@
  (name Day03_test)
  (modules Day03 Day03_test)
  (libraries alcotest))
+
+(test
+ (name Day04_test)
+ (modules Day04 Day04_test)
+ (libraries alcotest))
