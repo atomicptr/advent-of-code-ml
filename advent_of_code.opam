@@ -11,6 +11,7 @@ bug-reports: "https://github.com/atomicptr/advent-of-code-ml/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.17"}
+  "ocamlformat"
   "alcotest"
   "odoc" {with-doc}
 ]
