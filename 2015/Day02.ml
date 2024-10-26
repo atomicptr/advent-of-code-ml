@@ -11,8 +11,7 @@ let parse_line str =
   String.split_on_char 'x' str |> List.filter (fun s -> String.length s > 0) |> List.map int_of_string
 
 let parse_file str calc_func =
-  String.split_on_char '\n' str
-  |> List.filter (fun s -> String.length s > 0)
+  Base.split_on_newline str
   |> List.map parse_line
   |> List.map (fun lst -> calc_func (List.nth lst 0) (List.nth lst 1) (List.nth lst 2))
   |> List.fold_left ( + ) 0

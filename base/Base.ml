@@ -5,6 +5,9 @@ let get_day () =
   | day :: _ -> Some (int_of_string day)
   | _ -> None
 
+let explode str = List.init (String.length str) (String.get str)
+let split_on_newline str = String.split_on_char '\n' str |> List.filter (fun s -> String.length s > 0)
+
 (* From atomicptr/pathlib-ml *)
 
 (** Read text from file *)
