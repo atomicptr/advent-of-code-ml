@@ -6,24 +6,24 @@
 (test
  (name Day01_test)
  (modules Day01 Day01_test)
- (libraries alcotest))
+ (libraries Base alcotest))
 
 (test
  (name Day02_test)
  (modules Day02 Day02_test)
- (libraries alcotest))
+ (libraries Base alcotest))
 
 (test
  (name Day03_test)
  (modules Day03 Day03_test)
- (libraries alcotest))
+ (libraries Base alcotest))
 
 (test
  (name Day04_test)
  (modules Day04 Day04_test)
- (libraries alcotest))
+ (libraries Base alcotest))
 
 (test
  (name Day05_test)
  (modules Day05 Day05_test)
- (libraries alcotest))
+ (libraries Base alcotest))
