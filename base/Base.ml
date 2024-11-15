@@ -8,6 +8,20 @@ let get_day () =
 let explode str = List.init (String.length str) (String.get str)
 let split_on_newline str = String.split_on_char '\n' str |> List.filter (fun s -> String.length s > 0)
 
+let rec list_drop num lst =
+  match (num, lst) with
+  | 0, lst -> lst
+  | _, [] -> []
+  | n, _ :: rest -> list_drop (n - 1) rest
+
+let rec list_take num lst =
+  match (num, lst) with
+  | 0, _ -> []
+  | _, [] -> []
+  | n, head :: rest -> head :: list_take (n - 1) rest
+
+let list_slice index_from index_to lst = list_take (index_to - index_from + 1) (list_drop index_from lst)
+
 (* From atomicptr/pathlib-ml *)
 
 (** Read text from file *)
