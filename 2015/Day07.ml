@@ -52,31 +52,42 @@ let rec wires_are_set map = function
       | Some _ -> wires_are_set map rest
       | None -> false)
 
-let eval lst =
-  let rec intern map = function
-    | [] -> map
-    | Set (a, Wire wire) :: rest when wires_are_set map [ a ] -> intern (StringMap.add wire (get_val map a) map) rest
-    | And (a, b, Wire wire) :: rest when wires_are_set map [ a; b ] ->
-        intern (StringMap.add wire (get_val map a land get_val map b) map) rest
-    | Or (a, b, Wire wire) :: rest when wires_are_set map [ a; b ] ->
-        intern (StringMap.add wire (get_val map a lor get_val map b) map) rest
-    | Lshift (a, b, Wire wire) :: rest when wires_are_set map [ a; b ] ->
-        intern (StringMap.add wire (Int.shift_left (get_val map a) (get_val map b)) map) rest
-    | Rshift (a, b, Wire wire) :: rest when wires_are_set map [ a; b ] ->
-        intern (StringMap.add wire (Int.shift_right (get_val map a) (get_val map b)) map) rest
-    | Not (a, Wire wire) :: rest when wires_are_set map [ a ] ->
-        intern (StringMap.add wire (max_int - get_val map a) map) rest
-    | g :: rest -> intern map (rest @ [ g ])
-  in
-  intern StringMap.empty lst
+let connect wire value map =
+  StringMap.update wire
+    (function
+      | Some v -> Some v
+      | None -> Some value)
+    map
+
+let rec eval_with_map map = function
+  | [] -> map
+  | Set (a, Wire wire) :: rest when wires_are_set map [ a ] -> eval_with_map (connect wire (get_val map a) map) rest
+  | And (a, b, Wire wire) :: rest when wires_are_set map [ a; b ] ->
+      eval_with_map (connect wire (get_val map a land get_val map b) map) rest
+  | Or (a, b, Wire wire) :: rest when wires_are_set map [ a; b ] ->
+      eval_with_map (connect wire (get_val map a lor get_val map b) map) rest
+  | Lshift (a, b, Wire wire) :: rest when wires_are_set map [ a; b ] ->
+      eval_with_map (connect wire (Int.shift_left (get_val map a) (get_val map b)) map) rest
+  | Rshift (a, b, Wire wire) :: rest when wires_are_set map [ a; b ] ->
+      eval_with_map (connect wire (Int.shift_right (get_val map a) (get_val map b)) map) rest
+  | Not (a, Wire wire) :: rest when wires_are_set map [ a ] ->
+      eval_with_map (connect wire (max_int - get_val map a) map) rest
+  | g :: rest -> eval_with_map map (rest @ [ g ])
+
+let eval lst = eval_with_map StringMap.empty lst
 
 let map_get key map =
   match StringMap.find_opt key map with
   | Some v -> v
   | None -> failwith @@ "Unknown key: " ^ key
 
-let eval_input input = Base.split_on_newline input |> List.map parse_string |> eval
+let eval_input map input = Base.split_on_newline input |> List.map parse_string |> eval_with_map map
 
 let run input =
-  let result = eval_input input in
-  print_endline ("Part 1: a = " ^ string_of_int @@ map_get "a" result)
+  let result = eval_input StringMap.empty input in
+  let wire_a = map_get "a" result in
+  print_endline ("Part 1: a = " ^ string_of_int @@ wire_a);
+  let part_2_input = StringMap.add "b" wire_a StringMap.empty in
+  let result = eval_input part_2_input input in
+  let wire_a = map_get "a" result in
+  print_endline ("Part 2: a = " ^ string_of_int @@ wire_a)
