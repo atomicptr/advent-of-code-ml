@@ -32,3 +32,8 @@
  (name Day06_test)
  (modules Day06 Day06_test)
  (libraries Base alcotest))
+
+(test
+ (name Day07_test)
+ (modules Day07 Day07_test)
+ (libraries Base alcotest))

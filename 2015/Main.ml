@@ -6,5 +6,6 @@ let () =
   | Some 4 -> Day04.run (Base.read_text "./2015/Day04_input.txt")
   | Some 5 -> Day05.run (Base.read_text "./2015/Day05_input.txt")
   | Some 6 -> Day06.run (Base.read_text "./2015/Day06_input.txt")
+  | Some 7 -> Day07.run (Base.read_text "./2015/Day07_input.txt")
   | Some n -> print_endline ("Unknown day specified: " ^ string_of_int n)
   | None -> print_endline "Could not determine which day to run"

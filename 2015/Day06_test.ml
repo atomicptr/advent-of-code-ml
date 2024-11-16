@@ -61,4 +61,4 @@ let test () =
   check_lights_part2 13 (Day06.make_grid 3 3) 0
     [ Day06.TurnOn ((0, 0), (0, 0)); Day06.TurnOff ((0, 0), (0, 0)); Day06.TurnOff ((0, 0), (0, 0)) ]
 
-let () = Alcotest.run "2015-05" [ ("Day 05", [ ("can run day 05 examples", `Quick, test) ]) ]
+let () = Alcotest.run "2015-06" [ ("Day 06", [ ("can run day 06 examples", `Quick, test) ]) ]
