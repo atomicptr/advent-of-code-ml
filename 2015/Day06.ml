@@ -21,7 +21,7 @@ type grid = bool array * int
 let make_grid_opt width height =
   match (width, height) with
   | width, height when width <= 0 || height <= 0 -> None
-  | width, height -> Some (Array.init (width * height) (fun _ -> false), width)
+  | width, height -> Some (Array.make (width * height) 0, width)
 
 let make_grid width height = make_grid_opt width height |> Option.get
 let grid_index (_, width) x y = (y * width) + x
@@ -51,17 +51,37 @@ let grid_apply (grid, width) (from_x, from_y) (to_x, to_y) func =
   (Array.mapi iter grid, width)
 
 let grid_set_range grid from_coord to_coord value = grid_apply grid from_coord to_coord (fun _ -> value)
-let grid_flip_range grid from_coord to_coord = grid_apply grid from_coord to_coord (fun value -> Bool.not value)
-let grid_count (grid, _) = Array.fold_left (fun acc curr -> if curr then acc + 1 else acc) 0 grid
+
+let grid_flip_range grid from_coord to_coord =
+  grid_apply grid from_coord to_coord (function
+    | 0 -> 1
+    | 1 -> 0
+    | _ -> 0)
+
+let grid_count (grid, _) = Array.fold_left ( + ) 0 grid
 
 let eval grid = function
-  | TurnOn (from_coord, to_coord) -> grid_set_range grid from_coord to_coord true
-  | TurnOff (from_coord, to_coord) -> grid_set_range grid from_coord to_coord false
+  | TurnOn (from_coord, to_coord) -> grid_set_range grid from_coord to_coord 1
+  | TurnOff (from_coord, to_coord) -> grid_set_range grid from_coord to_coord 0
   | Toggle (from_coord, to_coord) -> grid_flip_range grid from_coord to_coord
 
-let rec eval_lines grid = function
+let grid_add grid from_coord to_coord amount =
+  grid_apply grid from_coord to_coord (fun value ->
+      let res = value + amount in
+      if res < 0 then 0 else res)
+
+let eval_part2 grid = function
+  | TurnOn (from_coord, to_coord) -> grid_add grid from_coord to_coord 1
+  | TurnOff (from_coord, to_coord) -> grid_add grid from_coord to_coord (-1)
+  | Toggle (from_coord, to_coord) -> grid_add grid from_coord to_coord 2
+
+let rec eval_lines grid eval_func = function
   | [] -> grid_count grid
-  | action :: rest -> eval_lines (eval grid (parse action |> Option.get)) rest
+  | action :: rest -> eval_lines (eval_func grid (parse action |> Option.get)) eval_func rest
 
 let run input =
-  print_endline @@ "Part 1: " ^ string_of_int @@ eval_lines (make_grid 1000 1000) (Base.split_on_newline input)
+  print_endline @@ "Part 1: " ^ string_of_int @@ eval_lines (make_grid 1000 1000) eval (Base.split_on_newline input);
+  print_endline
+  @@ "Part 2: "
+  ^ string_of_int
+  @@ eval_lines (make_grid 1000 1000) eval_part2 (Base.split_on_newline input)
