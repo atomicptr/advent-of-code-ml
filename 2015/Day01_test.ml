@@ -1,23 +1,19 @@
-open Alcotest
+open CamelCase
 
-let check_code str expected =
-  let result = Day01.parse_and_eval str in
-  check int str expected result
+let check_code expected input = IntValue.expect_equals expected (Day01.parse_and_eval input)
+let check_entry_pos expected input = IntValue.expect_equals expected (Day01.parse_and_find_basement_entry_pos input)
 
-let check_entry_pos str expected =
-  let result = Day01.parse_and_find_basement_entry_pos str in
-  check int str expected result
-
-let test_day_01 () =
-  check_code "(())" 0;
-  check_code "()()" 0;
-  check_code "(((" 3;
-  check_code "(()(()(" 3;
-  check_code "())" (-1);
-  check_code "))(" (-1);
-  check_code ")))" (-3);
-  check_code ")())())" (-3);
-  check_entry_pos ")" 1;
-  check_entry_pos "()())" 5
-
-let () = Alcotest.run "2015-01" [ ("Day 01", [ ("can run day 01 examples", `Quick, test_day_01) ]) ]
+let () =
+  run
+    [
+      test "check code: (())" (fun () -> check_code 0 "(())");
+      test "check code: ()()" (fun () -> check_code 0 "()()");
+      test "check code: (((" (fun () -> check_code 3 "(((");
+      test "check code: (()(()(" (fun () -> check_code 3 "(()(()(");
+      test "check code: ())" (fun () -> check_code (-1) "())");
+      test "check code: ))(" (fun () -> check_code (-1) "))(");
+      test "check code: )))" (fun () -> check_code (-3) ")))");
+      test "check code: )())())" (fun () -> check_code (-3) ")())())");
+      test "check entry pos for: )" (fun () -> check_entry_pos 1 ")");
+      test "check entry pos for: ()())" (fun () -> check_entry_pos 5 "()())");
+    ]
