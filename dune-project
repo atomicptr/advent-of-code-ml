@@ -17,7 +17,12 @@
  (name advent_of_code)
  (synopsis "Advent of Code implemented in OCaml")
  (description "Advent of Code implemented in OCaml")
- (depends ocaml dune ocamlformat alcotest)
+ (depends ocaml dune ocamlformat alcotest CamelCase)
  (tags ("advent-of-code")))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html
+
+(pin
+ (package
+  (name CamelCase))
+ (url "git+https://github.com/atomicptr/CamelCase"))

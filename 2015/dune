@@ -36,4 +36,4 @@
 (test
  (name Day07_test)
  (modules Day07 Day07_test)
- (libraries Base alcotest))
+ (libraries Base alcotest CamelCase))

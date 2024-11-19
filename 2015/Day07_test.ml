@@ -1,4 +1,4 @@
-open Alcotest
+open CamelCase
 
 let value_to_string = function
   | Day07.Signal n -> string_of_int n
@@ -12,16 +12,11 @@ let gate_to_string = function
   | Day07.Rshift (a, b, var) -> value_to_string a ^ " RSHIFT " ^ value_to_string b ^ " -> " ^ value_to_string var
   | Day07.Not (a, var) -> "NOT " ^ value_to_string a ^ " -> " ^ value_to_string var
 
-let check_gate input expected =
-  let res = Day07.parse input in
-  check string "check gate" expected (gate_to_string res)
+let check_parsing expected input = StringValue.expect_equals expected (Day07.parse input |> gate_to_string)
+let check_gate_result expected input wire = IntValue.expect_equals expected (Day07.eval input |> Day07.map_get wire)
 
-let check_gate_result input wire expected =
-  let res = Day07.eval input in
-  check int ("check if wire: " ^ wire ^ " is " ^ string_of_int expected) expected (Day07.map_get wire res)
-
-let check_example =
-  check_gate_result
+let check_example expected =
+  check_gate_result expected
     [
       Day07.Set (Day07.Signal 123, Day07.Wire "x");
       Day07.Set (Day07.Signal 456, Day07.Wire "y");
@@ -33,23 +28,26 @@ let check_example =
       Day07.Not (Day07.Wire "y", Day07.Wire "i");
     ]
 
-let test () =
-  check_gate [ "1234"; "->"; "c" ] "1234 -> c";
-  check_gate [ "a"; "AND"; "b"; "->"; "c" ] "a AND b -> c";
-  check_gate [ "a"; "OR"; "b"; "->"; "c" ] "a OR b -> c";
-  check_gate [ "a"; "LSHIFT"; "b"; "->"; "c" ] "a LSHIFT b -> c";
-  check_gate [ "a"; "RSHIFT"; "b"; "->"; "c" ] "a RSHIFT b -> c";
-  check_gate [ "NOT"; "b"; "->"; "c" ] "NOT b -> c";
-  check_gate_result [ Day07.Set (Day07.Signal 123, Day07.Wire "x") ] "x" 123;
-  check_gate_result [ Day07.And (Day07.Signal 7, Day07.Signal 7, Day07.Wire "res") ] "res" 7;
-
-  check_example "d" 72;
-  check_example "e" 507;
-  check_example "f" 492;
-  check_example "g" 114;
-  check_example "h" 65412;
-  check_example "i" 65079;
-  check_example "x" 123;
-  check_example "y" 456
-
-let () = Alcotest.run "2015-07" [ ("Day 07", [ ("can run day 07 examples", `Quick, test) ]) ]
+let () =
+  run
+    [
+      test "check parsing: 1234 -> c" (fun () -> check_parsing "1234 -> c" [ "1234"; "->"; "c" ]);
+      test "check parsing: a AND b -> c" (fun () -> check_parsing "a AND b -> c" [ "a"; "AND"; "b"; "->"; "c" ]);
+      test "check parsing: a OR b -> c" (fun () -> check_parsing "a OR b -> c" [ "a"; "OR"; "b"; "->"; "c" ]);
+      test "check parsing: a LSHIFT b -> c" (fun () ->
+          check_parsing "a LSHIFT b -> c" [ "a"; "LSHIFT"; "b"; "->"; "c" ]);
+      test "check parsing: a RSHIFT b -> c" (fun () ->
+          check_parsing "a RSHIFT b -> c" [ "a"; "RSHIFT"; "b"; "->"; "c" ]);
+      test "check parsing: NOT b -> c" (fun () -> check_parsing "NOT b -> c" [ "NOT"; "b"; "->"; "c" ]);
+      test "check eval: 123 -> x" (fun () -> check_gate_result 123 [ Day07.Set (Day07.Signal 123, Day07.Wire "x") ] "x");
+      test "check eval: 7 AND 7 -> res" (fun () ->
+          check_gate_result 7 [ Day07.And (Day07.Signal 7, Day07.Signal 7, Day07.Wire "res") ] "res");
+      test "check example value: d = 72" (fun () -> check_example 72 "d");
+      test "check example value: e = 507" (fun () -> check_example 507 "e");
+      test "check example value: f = 492" (fun () -> check_example 492 "f");
+      test "check example value: g = 114" (fun () -> check_example 114 "g");
+      test "check example value: h = 65412" (fun () -> check_example 65412 "h");
+      test "check example value: i = 65079" (fun () -> check_example 65079 "i");
+      test "check example value: x = 123" (fun () -> check_example 123 "x");
+      test "check example value: y = 456" (fun () -> check_example 456 "y");
+    ]
