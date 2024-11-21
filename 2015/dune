@@ -37,3 +37,8 @@
  (name Day07_test)
  (modules Day07 Day07_test)
  (libraries Base CamelCase))
+
+(test
+ (name Day08_test)
+ (modules Day08 Day08_test)
+ (libraries Base CamelCase))
