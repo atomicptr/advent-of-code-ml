@@ -31,6 +31,17 @@ let parse_input str =
   in
   inner [] [] (Base.split_on_newline str)
 
+let rec count_occurances num = function
+  | [] -> 0
+  | elem :: rest when elem = num -> 1 + count_occurances num rest
+  | _ :: rest -> count_occurances num rest
+
+let rec calculate_similarity_score lst1 lst2 =
+  match lst1 with
+  | [] -> 0
+  | num :: rest -> (num * count_occurances num lst2) + calculate_similarity_score rest lst2
+
 let run input =
   let lst1, lst2 = parse_input input in
-  print_endline @@ "Part 1: " ^ string_of_int @@ total_distance lst1 lst2
+  print_endline @@ "Part 1: " ^ string_of_int @@ total_distance lst1 lst2;
+  print_endline @@ "Part 2: " ^ string_of_int @@ calculate_similarity_score lst1 lst2
